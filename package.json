@@ -1,0 +1,11 @@
+{
+  "name": "quietkey",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:standalone": "node build-standalone.mjs",
+    "start": "node server.mjs",
+    "test": "node build-standalone.mjs && node --test tests/core.test.mjs tests/standalone.test.mjs"
+  }
+}

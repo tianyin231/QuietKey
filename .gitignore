@@ -1,0 +1,9 @@
+node_modules/
+.sites-runtime/
+.env
+.env.*
+preview-*.png
+cloudflare-upload/
+QuietKey-Cloudflare.zip
+tests/*-fixture.*
+QuietKey-加密备份-*.json
