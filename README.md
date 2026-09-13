@@ -46,11 +46,39 @@ npm start
 | `npm run build:standalone` | 根据 `dist/` 源码重新生成单文件 HTML |
 | `npm test` | 重新打包并运行算法、解析、加密及打包检查 |
 
-## 部署到 Cloudflare Pages
+## 部署到 Cloudflare
 
 网站不需要服务端运行时，Cloudflare 只需提供静态文件。
 
-### 直接上传
+### Workers：连接 GitHub 部署
+
+在 Cloudflare 的 **Workers & Pages** 中创建 Worker，连接本仓库。如果页面出现「构建命令」和「部署命令」，按下面填写：
+
+| 设置 | 值 |
+| --- | --- |
+| 项目名称 | `quietkey` |
+| 生产分支 | `main` |
+| 根目录 | 仓库根目录，无需修改 |
+| 构建命令 | **留空** |
+| 部署命令 | `npx wrangler deploy --name quietkey --assets ./dist --compatibility-date 2026-09-11` |
+| 非生产分支构建 | 暂不需要预览部署时，取消勾选 |
+| Protect with Cloudflare Access | 可保持关闭；需要限制网站访问人员时再配置 |
+
+可直接复制部署命令：
+
+```bash
+npx wrangler deploy --name quietkey --assets ./dist --compatibility-date 2026-09-11
+```
+
+`dist/` 已包含可直接发布的网页，因此构建命令留空，不用填写 `npm start` 或 `npm run build:standalone`。后者只用于生成单文件离线版。
+
+`--name` 应与 Cloudflare 项目名称一致。`--compatibility-date` 指定运行环境的兼容日期，不是网站有效期，无需每天更新；省略它且没有 Wrangler 配置文件时，会出现 `A compatibility_date is required` 错误。
+
+部署成功后，在项目的「概览」或「域和路由」中打开分配的 `https://quietkey.<你的子域名>.workers.dev` 地址，手机也可通过同一地址访问。连接 GitHub 后，向生产分支推送更新会触发部署。
+
+参考：[Workers 静态资源](https://developers.cloudflare.com/workers/static-assets/) · [兼容日期](https://developers.cloudflare.com/workers/configuration/compatibility-dates/)。
+
+### Pages：直接上传
 
 1. 将 `栖钥-离线版.html` 复制到一个空文件夹，并重命名为 `index.html`。
 2. 登录 Cloudflare，进入 **Workers & Pages**，创建 **Pages** 项目，选择直接上传文件。
@@ -61,7 +89,7 @@ npm start
 
 更新时，在原项目中创建新的生产部署并上传最新版文件，继续使用原来的站点地址。
 
-### 连接 GitHub
+### Pages：连接 GitHub
 
 如果希望推送代码后自动更新，可以在创建 Pages 项目时连接本仓库：
 
@@ -71,6 +99,8 @@ npm start
 | 框架预设 | 无 / None |
 | 构建命令 | 留空 |
 | 输出目录 | `dist` |
+
+Pages 的这个流程不需要填写部署命令。如果页面要求填写 `npx wrangler deploy`，说明进入了 Workers 创建流程，请使用上面的 Workers 配置。
 
 这里的 `dist/` 是已提交的静态源码目录，无需构建即可部署。具体入口以 [Cloudflare Pages 官方文档](https://developers.cloudflare.com/pages/get-started/direct-upload/) 为准。
 
